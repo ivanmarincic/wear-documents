@@ -56,36 +56,6 @@ class MainView : AppCompatActivity(), MainContract.View {
         presenter.loadData()
         presenter.initializeAddButton()
         presenter.initializeList()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val icon: AdaptiveIconDrawable = ContextCompat.getDrawable(this, R.mipmap.ic_launcher_round) as AdaptiveIconDrawable
-            val bmp = Bitmap.createBitmap(icon.intrinsicWidth * 5, icon.intrinsicHeight * 5, Bitmap.Config.ARGB_8888)
-            val canvas = Canvas(bmp)
-            icon.setBounds(0, 0, canvas.width, canvas.height)
-            icon.draw(canvas)
-            val file = java.io.File(Environment.getExternalStorageDirectory(), "/wear_documents.png")
-            file.createNewFile()
-            var fos: FileOutputStream? = null
-            try {
-                fos = FileOutputStream(file)
-
-                bmp.compress(Bitmap.CompressFormat.PNG, 100, fos)
-
-                fos.close()
-            } catch (e: IOException) {
-                if (fos != null) {
-                    try {
-                        fos.close()
-                    } catch (e1: IOException) {
-                        e1.printStackTrace()
-                    }
-
-                }
-            }
-
-        } else {
-            TODO("VERSION.SDK_INT < O")
-        }
-
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

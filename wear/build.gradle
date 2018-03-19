@@ -8,7 +8,7 @@ android {
         applicationId "io.github.twoloops.weardocuments"
         minSdkVersion 25
         targetSdkVersion 27
-        versionCode 7
+        versionCode 9
         versionName "1.2"
         vectorDrawables.useSupportLibrary = true
     }
