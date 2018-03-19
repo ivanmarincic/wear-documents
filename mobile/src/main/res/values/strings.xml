@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">Wear Documents</string>
+    <string name="main_view_add_file">Add documents by pressing \"+\" button</string>
+    <string name="channel_client_task_file_sent">Document sent to wearable</string>
+    <string name="message_client_task_file_deleted">Document deleted from wearable</string>
+    <string name="file_browser_dialog_select">Select</string>
+    <string name="file_browser_dialog_cancel">Cancel</string>
+    <string name="file_browser_dialog_title">File Browser</string>
+    <string name="document_preview_dialog_edit">Edit</string>
+    <string name="document_preview_dialog_rename">Rename</string>
+    <string name="document_preview_dialog_delete">Delete</string>
+    <string name="document_preview_dialog_cancel">Cancel</string>
+    <string name="document_preview_dialog_save">Save</string>
+    <string name="node_picker_dialog_title">Pick device for sync</string>
+    <string name="document_rename_dialog_title">Rename document</string>
+    <string name="document_rename_dialog_done">Done</string>
+    <string name="document_rename_dialog_cancel">Cancel</string>
+    <string name="alert_dialog_cancel">Cancel</string>
+    <string name="alert_dialog_ok">OK</string>
+    <string name="alert_dialog_title_error">Error</string>
+    <string name="alert_dialog_error_device_missing">There are no wearables to sync with</string>
+    <string name="alert_dialog_error_device_connection">There seems to be issue with wearable connection</string>
+    <string name="alert_dialog_error_reading_file">There seems to be issue when reading file</string>
+    <string name="alert_dialog_error_deleting_file">There seems to be issue when deleting file on wearable, delete from device only</string>
+    <string name="notification_title_uploading">Uploading document</string>
+    <string name="notification_title_uploading_finished">Uploading finished</string>
+    <string name="notification_title_uploading_failed">Uploading failed</string>
+    <string name="notification_button_uploading_cancel">Cancel</string>
+    <string name="notification_title_deleting">Deleting document</string>
+    <string name="notification_title_deleting_finished">Deleting finished</string>
+    <string name="notification_title_deleting_failed">Deleting failed</string>
+</resources>

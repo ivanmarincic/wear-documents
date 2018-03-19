@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.wear.widget.drawer.WearableDrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusable="true"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <io.github.twoloops.weardocuments.views.DocumentLayout
+            android:id="@+id/main_layout_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:background="@color/black" />
+
+        <ProgressBar
+            android:id="@+id/main_layout_progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/main_layout_empty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/document_browser_empty"
+            android:textColor="@color/white"
+            android:visibility="invisible" />
+    </FrameLayout>
+
+    <android.support.wear.widget.drawer.WearableNavigationDrawerView
+        android:id="@+id/main_layout_drawer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black900"
+        app:drawerContent="@id/drawer_content"
+        app:peekView="@id/peek_view">
+
+        <include layout="@layout/main_drawer_layout" />
+
+        <LinearLayout
+            android:id="@+id/peek_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:tint="@color/white"
+                android:src="@drawable/ic_arrow_down" />
+        </LinearLayout>
+    </android.support.wear.widget.drawer.WearableNavigationDrawerView>
+</android.support.wear.widget.drawer.WearableDrawerLayout>

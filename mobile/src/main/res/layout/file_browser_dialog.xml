@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/file_browser_dialog_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dialog_toolbar_size"
+            android:background="@color/colorPrimary"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:tint="@color/actionBarPrimaryText"
+                app:srcCompat="@drawable/ic_folder_open"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/file_browser_dialog_toolbar_icon_guideline"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/file_browser_dialog_title"
+                android:textColor="@color/actionBarPrimaryText"
+                android:textSize="@dimen/file_browser_dialog_toolbar_text_size"
+                app:layout_constraintBottom_toTopOf="@id/file_browser_dialog_toolbar_text_guideline"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintLeft_toRightOf="@id/file_browser_dialog_toolbar_icon_guideline"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.25" />
+
+            <TextView
+                android:id="@+id/file_browser_dialog_path"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:text="/"
+                android:textColor="@color/actionBarSecondaryText"
+                android:textSize="@dimen/file_browser_dialog_toolbar_secondary_text_size"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintLeft_toRightOf="@id/file_browser_dialog_toolbar_icon_guideline"
+                app:layout_constraintTop_toBottomOf="@id/file_browser_dialog_toolbar_text_guideline"
+                app:layout_constraintVertical_bias="0.75" />
+
+            <android.support.constraint.Guideline
+                android:id="@+id/file_browser_dialog_toolbar_icon_guideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.15" />
+
+            <android.support.constraint.Guideline
+                android:id="@+id/file_browser_dialog_toolbar_text_guideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.65" />
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/file_browser_dialog_list"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/file_browser_dialog_buttons_guideline"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_default="spread"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/file_browser_dialog_toolbar" />
+
+        <ProgressBar
+            android:id="@+id/file_browser_dialog_list_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/file_browser_dialog_list"
+            app:layout_constraintLeft_toLeftOf="@id/file_browser_dialog_list"
+            app:layout_constraintRight_toRightOf="@id/file_browser_dialog_list"
+            app:layout_constraintBottom_toBottomOf="@id/file_browser_dialog_list" />
+
+        <Button
+            android:id="@+id/file_browser_dialog_cancel_button"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/file_browser_dialog_cancel"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/file_browser_dialog_select_button"
+            app:layout_constraintTop_toBottomOf="@+id/file_browser_dialog_list"
+            app:layout_constraintVertical_bias="0.501" />
+
+        <Button
+            android:id="@+id/file_browser_dialog_select_button"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/file_browser_dialog_select"
+            android:textColor="@color/accent_text_color"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/file_browser_dialog_list" />
+
+
+        <android.support.constraint.Guideline
+            android:id="@+id/file_browser_dialog_buttons_guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.9" />
+
+    </android.support.constraint.ConstraintLayout>
+</RelativeLayout>

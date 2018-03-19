@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#6D4C41</color>
+    <color name="colorPrimaryDark">#5D4037</color>
+    <color name="colorPrimaryLight">#795548</color>
+    <color name="colorAccent">#ffc107</color>
+    <color name="colorAccentDisabled">#80ffc107</color>
+    <color name="colorWarning">#F44336</color>
+    <color name="colorWarningDisabled">#80F44336</color>
+    <color name="colorSuccess">#4CAF50</color>
+    <color name="colorSuccessDisabled">#804CAF50</color>
+    <color name="transparent">#00FFFFFF</color>
+    <color name="actionBarPrimaryText">#E8EAF6</color>
+    <color name="actionBarSecondaryText">#B3E8EAF6</color>
+    <color name="primaryText">#212121</color>
+    <color name="secondaryText">#B3212121</color>
+    <color name="iconBackgroundColor">@color/colorPrimaryDark</color>
+    <color name="iconForegroundColor">#FFFFFFFF</color>
+</resources>

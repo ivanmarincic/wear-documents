@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Wear Documents</string>
+    <string name="settings_view_title">Settings</string>
+    <string name="settings_view_zoom_levels">Zoom Levels</string>
+    <string name="settings_view_zoom_strength">Zoom Strength</string>
+    <string name="settings_view_dark_mode">Dark Mode</string>
+    <string name="document_browser_empty">Upload document from handheld</string>
+    <string name="document_browser_delete">Delete document</string>
+</resources>
