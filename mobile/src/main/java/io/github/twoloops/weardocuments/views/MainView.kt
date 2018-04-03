@@ -64,7 +64,7 @@ class MainView : AppCompatActivity(), MainContract.View {
                 addButton.isEnabled = true
             } else {
                 addButton.isEnabled = false
-                Toast.makeText(this, "UNABLE TO GRANT PERMISSION", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.main_view_read_permission_denied), Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -145,6 +145,9 @@ class MainView : AppCompatActivity(), MainContract.View {
 
     override fun getFileBrowserDialog(document: Document?): FileBrowserDialog {
         val dialog = FileBrowserDialog(this, document?.files)
+        dialog.setOnDismissListener {
+            addButton.isEnabled = true
+        }
         dialog.listener = {
             if (document != null) {
                 document.files = it
