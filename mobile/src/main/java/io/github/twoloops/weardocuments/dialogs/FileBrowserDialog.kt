@@ -70,7 +70,7 @@ class FileBrowserDialog(context: Context, private var selectedFiles: ArrayList<F
             val items = ArrayList<File>()
             items.addAll(adapter.selectedItems.values)
             listener?.invoke(items)
-            cancel()
+            dismiss()
         }
     }
 

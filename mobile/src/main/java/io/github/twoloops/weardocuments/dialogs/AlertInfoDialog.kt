@@ -10,9 +10,8 @@ import io.github.twoloops.weardocuments.R
 
 class AlertInfoDialog(private val context: Context) {
 
-    private val dialogBuilder = android.support.v7.app.AlertDialog.Builder(context)
-
     fun alertError(message: String) {
+        val dialogBuilder = android.support.v7.app.AlertDialog.Builder(context)
         dialogBuilder.setTitle(context.resources.getString(R.string.alert_dialog_title_error))
         dialogBuilder.setMessage(message)
         dialogBuilder.setPositiveButton(context.resources.getString(R.string.alert_dialog_ok), { _, _ ->
@@ -23,6 +22,7 @@ class AlertInfoDialog(private val context: Context) {
     }
 
     fun alertDeleteAnyway(listener: () -> Unit) {
+        val dialogBuilder = android.support.v7.app.AlertDialog.Builder(context)
         dialogBuilder.setTitle(context.resources.getString(R.string.alert_dialog_title_error))
         dialogBuilder.setMessage(context.resources.getString(R.string.alert_dialog_error_deleting_file))
         dialogBuilder.setPositiveButton(context.resources.getString(R.string.alert_dialog_ok), { _, _ ->

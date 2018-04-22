@@ -17,6 +17,7 @@ import kotlin.math.roundToInt
 class DocumentLayout : ViewGroup {
 
     // TODO: Improve zooming
+    // TODO: Rewrite layout
     private val factor = 0.146467f
     private var boxInset = 0
     private var isRound = false
@@ -44,7 +45,7 @@ class DocumentLayout : ViewGroup {
         }
         set(value) {
             scrollToPage(value)
-            refreshViewsFromAdapter()
+//            refreshViewsFromAdapter()
         }
     var zoomLevels: Int
         get() {
@@ -133,6 +134,11 @@ class DocumentLayout : ViewGroup {
                 val bottom = top + pageHeight
                 child.view.layout(left, top, right, bottom)
                 loadedPages[child.index] = child
+                var loaded = ""
+                for (entry in loadedPages) {
+                    loaded += entry.key.toString() + ","
+                }
+                println("loaded:" + loaded)
             }
         }
     }
@@ -198,20 +204,20 @@ class DocumentLayout : ViewGroup {
     }
 
     private fun onPageChanged(pageChangeValue: Int) {
-        if (!hasBeenRefreshed) {
-            val currentPageWithOffset = _currentPage - (cacheThresholdPage / 2)
-            if (currentPageWithOffset in 0 until _adapter!!.getCount() - cacheThresholdPage) {
-                if (pageChangeValue > 0) {
-                    val child = loadedPages.pollFirstEntry()?.value
-                    val newPosition = currentPageWithOffset + cacheThresholdPage
-                    moveChild(_adapter!!.getView(newPosition, child!!.view, this), newPosition)
-                } else {
-                    val child = loadedPages.pollLastEntry()?.value
-                    moveChild(_adapter!!.getView(currentPageWithOffset, child!!.view, this), currentPageWithOffset)
-                }
-                requestLayout()
-            }
-        }
+//        if (!hasBeenRefreshed) {
+//            val currentPageWithOffset = _currentPage - Math.ceil((cacheThresholdPage / 2.0)).toInt()
+//            if (currentPageWithOffset in 0 until _adapter!!.getCount() - cacheThresholdPage) {
+//                if (pageChangeValue > 0) {
+//                    val child = loadedPages.pollFirstEntry()?.value
+//                    val newPosition = currentPageWithOffset + cacheThresholdPage
+//                    moveChild(_adapter!!.getView(newPosition, child!!.view, this), newPosition)
+//                } else {
+//                    val child = loadedPages.pollLastEntry()?.value
+//                    moveChild(_adapter!!.getView(currentPageWithOffset, child!!.view, this), currentPageWithOffset)
+//                }
+//                requestLayout()
+//            }
+//        }
         hasBeenRefreshed = false
         lastPage = _currentPage
         _adapter!!.onPageChanged(_currentPage)
@@ -232,7 +238,12 @@ class DocumentLayout : ViewGroup {
 
     private fun moveChild(view: View, position: Int) {
         val child = Child(view, position)
-        invalidChildren.add(child)
+        if ((loadedPages[position] == null)) {
+            if (invalidChildren.indexOf(child) == -1) {
+                invalidChildren.add(child)
+                println("load:" + position)
+            }
+        }
     }
 
     private fun scrollToPage(pageToScrollTo: Int) {
@@ -293,7 +304,11 @@ class DocumentLayout : ViewGroup {
 
     private fun refreshViewsFromAdapter() {
         loadedPages.clear()
-        val currentPageWithOffset = Math.min(Math.max(_currentPage - (cacheThresholdPage / 2), 0), _adapter!!.getCount() - cacheThresholdPage)
+        val currentPageWithOffset = if (_adapter!!.getCount() >= cacheThresholdPage) {
+            Math.min(Math.max(_currentPage - (cacheThresholdPage / 2), 0), _adapter!!.getCount() - cacheThresholdPage)
+        } else {
+            0
+        }
         for (i in 0 until childCount) {
             val view = getChildAt(i)
             val pageWithOffset = currentPageWithOffset + i
@@ -308,7 +323,7 @@ class DocumentLayout : ViewGroup {
         loadedPages.clear()
         invalidChildren.clear()
         if (_adapter == null) return
-        for (i in 0 until Math.min(cacheThresholdPage, _adapter!!.getCount())) {
+        for (i in 0 until _adapter!!.getCount()) {
             val view = _adapter!!.getView(i, null, this)
             val child = Child(view, i)
             invalidChildren.add(child)

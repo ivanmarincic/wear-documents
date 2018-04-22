@@ -53,6 +53,7 @@ class MainView : AppCompatActivity(), MainContract.View {
         setContentView(R.layout.main_view)
         presenter = MainPresenter()
         presenter.start(this)
+        presenter.initializeToolbar()
         presenter.loadData()
         presenter.initializeAddButton()
         presenter.initializeList()

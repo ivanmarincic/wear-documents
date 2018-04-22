@@ -18,6 +18,7 @@ import java.lang.ref.WeakReference
 
 
 class MainPresenter : MainContract.Presenter {
+
     override fun getFile() {
     }
 
@@ -30,6 +31,7 @@ class MainPresenter : MainContract.Presenter {
     override fun initializeAddButton() {
         view.addButton.isEnabled = hasPermission()
         view.addButton.setOnClickListener {
+            it.isEnabled = false
             view.getFileBrowserDialog().show()
         }
     }
@@ -102,5 +104,8 @@ class MainPresenter : MainContract.Presenter {
                 it.close()
             }
         }
+    }
+
+    override fun initializeToolbar() {
     }
 }

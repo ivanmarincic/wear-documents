@@ -36,7 +36,7 @@ class FileLoaderTask(private var progressBar: WeakReference<ProgressBar>, privat
                         || it.extension == "pdf"
                         || it.extension == "docx"
                         || it.extension == "png"
-                        || it.extension == ""
+                        || it.isDirectory
             }
             val filesList = ArrayList<File>()
             for (fileEntry in filesInFolder) {

@@ -75,6 +75,7 @@ class DocumentDeleteTask(private val context: WeakReference<Context>, private va
                 }
                 nodeList.count() == 0 -> {
                     AlertInfoDialog.getInstance(context.get()!!).alertError(context.get()!!.getString(R.string.alert_dialog_error_device_missing))
+                    listener(false)
                     deleteFailed = true
                 }
                 else -> sendDataWithNode(nodeList[0], document)
@@ -149,7 +150,7 @@ class DocumentDeleteTask(private val context: WeakReference<Context>, private va
                 }
             }
             if (isSuccessful == -1 || isSuccessful == 0) {
-                deleteFailed()
+                deleteFailed = true
             }
             listener(isSuccessful == 1)
         } catch (e: Exception) {

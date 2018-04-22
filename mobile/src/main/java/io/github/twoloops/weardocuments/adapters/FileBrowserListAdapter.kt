@@ -1,7 +1,5 @@
 package io.github.twoloops.weardocuments.adapters
 
-import android.annotation.SuppressLint
-import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -72,26 +70,35 @@ class FileBrowserListAdapter : RecyclerView.Adapter<FileBrowserListAdapter.ViewH
                     listener?.invoke(item)
                 }
             } else {
-                holder.parent.setOnClickListener(null)
+                holder.parent.setOnClickListener {
+                    tryCheck(holder.checkboxView, item)
+                }
                 holder.checkboxView.visibility = View.VISIBLE
                 holder.checkboxView.setOnTouchListener { v, event ->
-                    val count = selectedItems.count()
                     if (event.action == MotionEvent.ACTION_DOWN) {
-                        if (count == 0) {
-                            currentSelectionType = item.type
-                        }
+                        tryCheck(v as CheckBox, item)
+                        true
+                    } else {
+                        false
                     }
-                    val selectMultiple = (item.type == File.FILE_TYPE_PDF || item.type == File.FILE_TYPE_DOCUMENT) && count == 1 && !(v as CheckBox).isChecked
-                    (currentSelectionType != item.type && count > 0) || selectMultiple
-
                 }
                 holder.checkboxView.isChecked = selectedItems[item.hashCode()] != null
-                holder.checkboxView.setOnClickListener {
-                    if (selectedItems.remove(item.hashCode()) == null && (it as CheckBox).isChecked) {
-                        selectedItems[item.hashCode()] = item
-                    }
-                    listener?.invoke(item)
+            }
+        }
+    }
+
+    private fun tryCheck(view: CheckBox, item: File) {
+        val count = selectedItems.count()
+        if (count == 0) {
+            currentSelectionType = item.type
+        }
+        if (currentSelectionType == item.type) {
+            if (currentSelectionType == File.FILE_TYPE_IMAGE || count == 0 || (count == 1 && view.isChecked)) {
+                view.toggle()
+                if (selectedItems.remove(item.hashCode()) == null && view.isChecked) {
+                    selectedItems[item.hashCode()] = item
                 }
+                listener?.invoke(item)
             }
         }
     }

@@ -118,6 +118,9 @@ class DocumentPreviewDialog(context: Context, var item: Document) : Dialog(conte
                 view.setImageBitmap(it[i].currentImage)
                 dataView.addView(view)
             }
+            if(it.count() == 0){
+                saveButton.isEnabled = false
+            }
         })
         dataConverter!!.execute(item)
     }
