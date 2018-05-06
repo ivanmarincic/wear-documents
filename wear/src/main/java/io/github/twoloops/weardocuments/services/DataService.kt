@@ -21,14 +21,14 @@ class DataService(private val context: Context) {
     private fun saveImages(document: Document) {
         "${context.filesDir.absolutePath}${File.separator}${document.id}${File.separator}"
         val folder = context.getDir(document.id, Context.MODE_PRIVATE)
-        for ((index, bitmap) in document.data.withIndex()) {
-            val file = File(folder, "$index")
+        for (i in document.dataChunkStart until Math.min((document.dataChunkStart + document.dataChunkSize), document.dataCount)) {
+            val file = File(folder, "$i")
             if (file.exists()) {
                 file.delete()
             }
             file.createNewFile()
             val out = FileOutputStream(file)
-            bitmap.currentImage!!.compress(Bitmap.CompressFormat.JPEG, 50, out)
+            document.data[i - document.dataChunkStart].currentImage!!.compress(Bitmap.CompressFormat.JPEG, 100, out)
             out.close()
         }
     }
@@ -92,23 +92,25 @@ class DataService(private val context: Context) {
 
     fun addToJson(document: Document) {
         saveImages(document)
-        loadJson()
-        if (currentDataJson == null) {
-            currentDataJson = JSONArray()
-        }
-        val indexOfDocument = (0..(currentDataJson!!.length() - 1)).lastOrNull { currentDataJson!!.getJSONObject(it).getString("id") == document.id }
-                ?: -1
-        if (indexOfDocument == -1) {
-            currentDataJson!!.put(document.toJsonObject())
-        } else {
-            currentDataJson!!.put(indexOfDocument, document.toJsonObject())
-        }
-        with(context.openFileOutput(fileName, Context.MODE_PRIVATE)) {
-            write(currentDataJson.toString().toByteArray())
-            close()
-        }
-        context.mainLooper.run {
-            listener?.invoke(currentDataJson!!, indexOfDocument)
+        if(document.dataChunkStart + document.dataChunkSize >= document.dataCount){
+            loadJson()
+            if (currentDataJson == null) {
+                currentDataJson = JSONArray()
+            }
+            val indexOfDocument = (0..(currentDataJson!!.length() - 1)).lastOrNull { currentDataJson!!.getJSONObject(it).getString("id") == document.id }
+                    ?: -1
+            if (indexOfDocument == -1) {
+                currentDataJson!!.put(document.toJsonObject())
+            } else {
+                currentDataJson!!.put(indexOfDocument, document.toJsonObject())
+            }
+            with(context.openFileOutput(fileName, Context.MODE_PRIVATE)) {
+                write(currentDataJson.toString().toByteArray())
+                close()
+            }
+            context.mainLooper.run {
+                listener?.invoke(currentDataJson!!, indexOfDocument)
+            }
         }
     }
 

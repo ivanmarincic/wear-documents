@@ -45,7 +45,7 @@ class DocumentLayout : ViewGroup {
         }
         set(value) {
             scrollToPage(value)
-//            refreshViewsFromAdapter()
+            refreshViewsFromAdapter()
         }
     var zoomLevels: Int
         get() {
@@ -134,11 +134,6 @@ class DocumentLayout : ViewGroup {
                 val bottom = top + pageHeight
                 child.view.layout(left, top, right, bottom)
                 loadedPages[child.index] = child
-                var loaded = ""
-                for (entry in loadedPages) {
-                    loaded += entry.key.toString() + ","
-                }
-                println("loaded:" + loaded)
             }
         }
     }
@@ -204,20 +199,20 @@ class DocumentLayout : ViewGroup {
     }
 
     private fun onPageChanged(pageChangeValue: Int) {
-//        if (!hasBeenRefreshed) {
-//            val currentPageWithOffset = _currentPage - Math.ceil((cacheThresholdPage / 2.0)).toInt()
-//            if (currentPageWithOffset in 0 until _adapter!!.getCount() - cacheThresholdPage) {
-//                if (pageChangeValue > 0) {
-//                    val child = loadedPages.pollFirstEntry()?.value
-//                    val newPosition = currentPageWithOffset + cacheThresholdPage
-//                    moveChild(_adapter!!.getView(newPosition, child!!.view, this), newPosition)
-//                } else {
-//                    val child = loadedPages.pollLastEntry()?.value
-//                    moveChild(_adapter!!.getView(currentPageWithOffset, child!!.view, this), currentPageWithOffset)
-//                }
-//                requestLayout()
-//            }
-//        }
+        if (!hasBeenRefreshed) {
+            val currentPageWithOffset = _currentPage - Math.ceil((cacheThresholdPage / 2.0)).toInt()
+            if (currentPageWithOffset in 0 until _adapter!!.getCount() - cacheThresholdPage) {
+                if (pageChangeValue > 0) {
+                    val child = loadedPages.pollFirstEntry()?.value
+                    val newPosition = currentPageWithOffset + cacheThresholdPage
+                    moveChild(_adapter!!.getView(newPosition, child!!.view, this), newPosition)
+                } else {
+                    val child = loadedPages.pollLastEntry()?.value
+                    moveChild(_adapter!!.getView(currentPageWithOffset, child!!.view, this), currentPageWithOffset)
+                }
+                requestLayout()
+            }
+        }
         hasBeenRefreshed = false
         lastPage = _currentPage
         _adapter!!.onPageChanged(_currentPage)
@@ -241,7 +236,6 @@ class DocumentLayout : ViewGroup {
         if ((loadedPages[position] == null)) {
             if (invalidChildren.indexOf(child) == -1) {
                 invalidChildren.add(child)
-                println("load:" + position)
             }
         }
     }
@@ -323,7 +317,7 @@ class DocumentLayout : ViewGroup {
         loadedPages.clear()
         invalidChildren.clear()
         if (_adapter == null) return
-        for (i in 0 until _adapter!!.getCount()) {
+        for (i in 0 until Math.min(_adapter!!.getCount(), cacheThresholdPage)) {
             val view = _adapter!!.getView(i, null, this)
             val child = Child(view, i)
             invalidChildren.add(child)

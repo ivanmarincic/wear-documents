@@ -12,6 +12,8 @@ class Document : Serializable {
     var id: String = UUID.randomUUID().toString()
     var data: ArrayList<SerializableBitmap> = ArrayList()
     var dataCount = 0
+    var dataChunkSize = 0
+    var dataChunkStart = 0
     var imageFiles: ArrayList<java.io.File> = ArrayList()
     var files: ArrayList<File> = ArrayList()
     var type: Int = 0
@@ -30,6 +32,8 @@ class Document : Serializable {
         type = json.getInt("type")
         name = json.getString("name")
         dataCount = json.getInt("dataCount")
+//        dataChunkSize = json.getInt("dataChunkSize")
+//        dataChunkStart = json.getInt("dataChunkStart")
         files = ArrayList()
         val dataJson = json.getJSONArray("files")
         for (i in 0..(dataJson.length() - 1)) {

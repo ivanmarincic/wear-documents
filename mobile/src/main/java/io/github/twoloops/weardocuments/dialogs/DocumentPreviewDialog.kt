@@ -2,16 +2,20 @@ package io.github.twoloops.weardocuments.dialogs
 
 import android.app.Dialog
 import android.content.Context
+import android.graphics.pdf.PdfRenderer
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import io.github.twoloops.core.Document
+import io.github.twoloops.core.SerializableBitmap
 import io.github.twoloops.weardocuments.R
 import io.github.twoloops.weardocuments.helpers.Utils
-import io.github.twoloops.weardocuments.tasks.DataConverter
+import io.github.twoloops.weardocuments.tasks.DocumentConverter
 import java.lang.ref.WeakReference
 
 
@@ -39,12 +43,16 @@ class DocumentPreviewDialog(context: Context, var item: Document) : Dialog(conte
         findViewById<ImageView>(R.id.document_preview_dialog_toolbar_icon)
     }
     private val dataView by lazy(LazyThreadSafetyMode.NONE) {
-        findViewById<LinearLayout>(R.id.document_preview_dialog_data)
+        findViewById<ListView>(R.id.document_preview_dialog_data)
     }
     private val progressBar by lazy(LazyThreadSafetyMode.NONE) {
         findViewById<ProgressBar>(R.id.document_preview_dialog_progress_bar)
     }
-    private var dataConverter: DataConverter? = null
+    private val handler by lazy(LazyThreadSafetyMode.NONE) {
+        Handler(Looper.getMainLooper())
+    }
+    private lateinit var documentConverter: DocumentConverter
+    private var pdfRenderer: PdfRenderer? = null
 
     var deleteListener: ((document: Document) -> Unit)? = null
     var saveListener: ((document: Document) -> Unit)? = null
@@ -55,9 +63,8 @@ class DocumentPreviewDialog(context: Context, var item: Document) : Dialog(conte
         setContentView(R.layout.document_preview_dialog)
         initializeToolbar()
         initializeButtons()
-        loadData()
+        initializeList()
         setOnDismissListener {
-            dataConverter!!.cancel(true)
         }
     }
 
@@ -69,16 +76,13 @@ class DocumentPreviewDialog(context: Context, var item: Document) : Dialog(conte
     private fun initializeButtons() {
         saveButton.setOnClickListener {
             dismiss()
-            dataConverter!!.cancel(true)
             saveListener?.invoke(item)
         }
         cancelButton.setOnClickListener {
             dismiss()
-            dataConverter!!.cancel(true)
         }
         deleteButton.setOnClickListener {
             dismiss()
-            dataConverter!!.cancel(true)
             deleteListener?.invoke(item)
         }
         renameButton.setOnClickListener {
@@ -109,20 +113,57 @@ class DocumentPreviewDialog(context: Context, var item: Document) : Dialog(conte
         b.show()
     }
 
-    private fun loadData() {
-        dataConverter = DataConverter(WeakReference(context), {
-            progressBar.visibility = View.INVISIBLE
-            for (i in 0..(it.count() - 1)) {
-                val view = ImageView(context)
+    private fun initializeList() {
+        val adapter = Adapter()
+        var adapterSet = false
+        item.dataChunkSize = 10
+        documentConverter = DocumentConverter(item, WeakReference(context))
+        documentConverter.listener = {
+            handler.post({
+                progressBar.visibility = View.INVISIBLE
+                item.data.addAll(it)
+                if (!adapterSet) {
+                    adapterSet = true
+                    dataView.adapter = adapter
+                }
+                adapter.notifyDataSetChanged()
+            })
+        }
+        documentConverter.start()
+    }
+
+    inner class Adapter : BaseAdapter() {
+
+        var lastLoaded = 0
+
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+            val view: ImageView?
+            if (convertView == null) {
+                view = ImageView(context)
                 view.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-                view.setImageBitmap(it[i].currentImage)
-                dataView.addView(view)
+            } else {
+                view = convertView as ImageView
             }
-            if(it.count() == 0){
-                saveButton.isEnabled = false
+            view.setImageBitmap(getItem(position).currentImage)
+            if (position % item.dataChunkSize == item.dataChunkSize / 2 && position > lastLoaded) {
+                lastLoaded = position
+                documentConverter.nextChunk()
             }
-        })
-        dataConverter!!.execute(item)
+            return view
+        }
+
+        override fun getItem(position: Int): SerializableBitmap {
+            return item.data[position]
+        }
+
+        override fun getItemId(position: Int): Long {
+            return position.toLong()
+        }
+
+        override fun getCount(): Int {
+            return item.data.count()
+        }
+
     }
 
 }

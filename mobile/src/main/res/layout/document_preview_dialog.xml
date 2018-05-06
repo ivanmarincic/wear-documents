@@ -55,31 +55,24 @@
                 app:layout_constraintGuide_percent="0.15" />
         </android.support.constraint.ConstraintLayout>
 
-        <ScrollView
-            android:id="@+id/document_preview_dialog_data_scroll"
+        <ListView
+            android:id="@+id/document_preview_dialog_data"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toTopOf="@id/document_preview_dialog_content_buttons"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/file_browser_dialog_toolbar">
-
-            <LinearLayout
-                android:id="@+id/document_preview_dialog_data"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" />
-        </ScrollView>
+            app:layout_constraintTop_toBottomOf="@+id/file_browser_dialog_toolbar"/>
 
         <ProgressBar
             android:id="@+id/document_preview_dialog_progress_bar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="@id/document_preview_dialog_data_scroll"
-            app:layout_constraintLeft_toLeftOf="@id/document_preview_dialog_data_scroll"
-            app:layout_constraintRight_toRightOf="@id/document_preview_dialog_data_scroll"
-            app:layout_constraintTop_toTopOf="@id/document_preview_dialog_data_scroll" />
+            app:layout_constraintBottom_toBottomOf="@id/document_preview_dialog_data"
+            app:layout_constraintLeft_toLeftOf="@id/document_preview_dialog_data"
+            app:layout_constraintRight_toRightOf="@id/document_preview_dialog_data"
+            app:layout_constraintTop_toTopOf="@id/document_preview_dialog_data" />
 
         <LinearLayout
             android:layout_width="0dp"

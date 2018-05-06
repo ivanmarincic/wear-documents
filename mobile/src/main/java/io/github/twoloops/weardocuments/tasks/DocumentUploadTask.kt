@@ -28,7 +28,6 @@ import org.apache.commons.io.output.CountingOutputStream
 import org.apache.commons.lang3.SerializationUtils
 import java.io.ObjectOutputStream
 import java.lang.ref.WeakReference
-import java.util.*
 import kotlin.math.roundToInt
 
 
@@ -53,11 +52,11 @@ class DocumentUploadTask(private val context: WeakReference<Context>) : AsyncTas
             null
         }
     }
-    private val cancelBroadcastReceiver = object : BroadcastReceiver() {
+    private val  cancelBroadcastReceiver = object : BroadcastReceiver() {
 
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent!!.action == cancelIntentAction) {
-                cancel(true)
+                this@DocumentUploadTask.cancel(true)
             }
         }
     }
@@ -98,8 +97,6 @@ class DocumentUploadTask(private val context: WeakReference<Context>) : AsyncTas
     override fun doInBackground(vararg params: Document?) {
         try {
             val document = params[0]!!
-            document.data = DataConverter(WeakReference(context.get()!!)).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, document).get()
-            document.dataCount = document.data.count()
             val nodeList = ArrayList<Node>()
             nodeList.addAll(Tasks.await(capabilityClient.getCapability("get_wear_documents", CapabilityClient.FILTER_REACHABLE)).nodes)
             when {
@@ -184,30 +181,50 @@ class DocumentUploadTask(private val context: WeakReference<Context>) : AsyncTas
 
     private fun sendDataWithNode(node: Node, data: Document) {
         try {
-            channel = Tasks.await(channelClient.openChannel(node.id, "/document"))
-            val outputStream = Tasks.await(channelClient.getOutputStream(channel!!))
-            if (outputStream != null) {
-                val countingOutputStream = CountingOutputStream(outputStream)
-                objectStream = ObjectOutputStream(countingOutputStream)
-                val objectByteArray = SerializationUtils.serialize(data)
-                progressUpdateRunnable = object : Runnable {
-                    override fun run() {
-                        try {
-                            publishProgress(countingOutputStream.byteCount.toFloat() / objectByteArray.size)
-                            handler.postDelayed(this, 500)
-                        } catch (e: Exception) {
-                            handler.removeCallbacks(this)
-                            uploadFailed(e)
+            data.dataChunkSize = 10
+            var isUploadingInProgress = true
+            val documentConverter = DocumentConverter(data, context)
+            documentConverter.listener = {
+                try {
+                    data.data = it
+                    channel = Tasks.await(channelClient.openChannel(node.id, "/document"))
+                    val outputStream = Tasks.await(channelClient.getOutputStream(channel!!))
+                    if (outputStream != null) {
+                        val countingOutputStream = CountingOutputStream(outputStream)
+                        objectStream = ObjectOutputStream(countingOutputStream)
+                        val objectByteArray = SerializationUtils.serialize(data)
+                        val chunkProgress = (data.dataChunkStart) / data.dataCount.toFloat()
+                        val chunkValue = (data.dataChunkSize) / data.dataCount.toFloat()
+                        progressUpdateRunnable = object : Runnable {
+                            override fun run() {
+                                try {
+                                    publishProgress(chunkProgress + (chunkValue * countingOutputStream.byteCount.toFloat() / objectByteArray.size))
+                                    handler.postDelayed(this, 500)
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                    handler.removeCallbacks(this)
+                                    uploadFailed(e)
+                                }
+                            }
                         }
+                        handler.post(progressUpdateRunnable)
+                        objectStream!!.writeObject(data)
+                        objectStream!!.flush()
+                        objectStream!!.close()
+                        channelClient.close(channel!!)
+                        handler.removeCallbacks(progressUpdateRunnable)
+                        isUploadingInProgress = documentConverter.nextChunk()
                     }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    uploadFailed(e)
                 }
-                handler.post(progressUpdateRunnable)
-                objectStream!!.writeObject(data)
-                objectStream!!.flush()
-                objectStream!!.close()
-                channelClient.close(channel!!)
+            }
+            documentConverter.start()
+            while (isUploadingInProgress) {
             }
         } catch (e: Exception) {
+            e.printStackTrace()
             uploadFailed(e)
         }
     }

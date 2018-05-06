@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:title="@string/toolbar_menu_about" android:icon="@drawable/ic_help"/>
-    <item android:title="@string/toolbar_menu_settings" android:icon="@drawable/ic_settings"/>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <!--<item-->
+        <!--android:id="@+id/toolbar_menu_settings_button"-->
+        <!--android:icon="@drawable/ic_settings"-->
+        <!--android:title="@string/toolbar_menu_settings"-->
+        <!--app:showAsAction="never" />-->
+    <item
+        android:id="@+id/toolbar_menu_about_button"
+        android:icon="@drawable/ic_help"
+        android:title="@string/toolbar_menu_about"
+        app:showAsAction="always" />
 </menu>

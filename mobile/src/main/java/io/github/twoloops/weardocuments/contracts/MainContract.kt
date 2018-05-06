@@ -20,7 +20,6 @@ class MainContract {
         fun start(view: View)
         fun initializeAddButton()
         fun initializeList()
-        fun initializeToolbar()
         fun hasPermission(): Boolean
         fun sendDocument(document: Document)
         fun deleteDocument(document: Document, listener: ((isSuccessful: Boolean) -> Unit))

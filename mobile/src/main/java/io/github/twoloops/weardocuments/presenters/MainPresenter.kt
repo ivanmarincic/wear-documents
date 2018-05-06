@@ -105,7 +105,4 @@ class MainPresenter : MainContract.Presenter {
             }
         }
     }
-
-    override fun initializeToolbar() {
-    }
 }

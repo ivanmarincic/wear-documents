@@ -2,6 +2,7 @@ package io.github.twoloops.weardocuments.helpers
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import io.github.twoloops.core.File
 import io.github.twoloops.weardocuments.R
@@ -18,6 +19,9 @@ import android.support.v4.content.ContextCompat
 class Utils {
     companion object {
         private var atomicInteger = AtomicInteger(18273)
+        var pageWidth: Int = 595
+        var pageHeight: Int = 842
+
         fun getIconForType(type: Int): Int {
             return when (type) {
                 File.FILE_TYPE_IMAGE -> R.drawable.ic_image
@@ -53,6 +57,42 @@ class Utils {
             drawable.draw(canvas)
 
             return bitmap
+        }
+
+        fun calculateInSampleSize(
+                options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
+            // Raw height and width of image
+            val height = options.outHeight
+            val width = options.outWidth
+            var inSampleSize = 1
+
+            if (height > reqHeight || width > reqWidth) {
+
+                val halfHeight = height / 2
+                val halfWidth = width / 2
+
+                // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+                // height and width larger than the requested height and width.
+                while (halfHeight / inSampleSize >= reqHeight && halfWidth / inSampleSize >= reqWidth) {
+                    inSampleSize *= 2
+                }
+            }
+
+            return inSampleSize
+        }
+
+        fun decodeBitmapFromFile(file: File, reqWidth: Int, reqHeight: Int): Bitmap {
+            // First decode with inJustDecodeBounds=true to check dimensions
+            val options = BitmapFactory.Options()
+            options.inJustDecodeBounds = true
+            BitmapFactory.decodeFile(file.path, options)
+
+            // Calculate inSampleSize
+            options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight)
+
+            // Decode bitmap with inSampleSize set
+            options.inJustDecodeBounds = false
+            return BitmapFactory.decodeFile(file.path, options)
         }
     }
 }
