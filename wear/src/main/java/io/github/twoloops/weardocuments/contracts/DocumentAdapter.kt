@@ -22,33 +22,26 @@
  * SOFTWARE.
  */
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+package io.github.twoloops.weardocuments.contracts
 
-buildscript {
-    ext.kotlin_version = '1.2.41'
-    ext.support_version = '27.1.1'
+import android.database.DataSetObserver
+import android.view.View
+import android.view.ViewGroup
+import io.github.twoloops.core.Document
+import java.io.File
 
-    repositories {
-        google()
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.2'
-        classpath 'com.google.gms:google-services:3.1.1'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
-    }
-}
-
-allprojects {
-    repositories {
-        google()
-        jcenter()
-    }
-}
-
-task clean(type: Delete) {
-    delete rootProject.buildDir
+interface DocumentAdapter {
+    var document: Document
+    var currentPage: Int
+    var dark: Boolean
+    var zoomLevels: Int
+    var zoomStrength: Float
+    fun getView(position: Int, convertView: View?, parent: ViewGroup): View
+    fun getItem(position: Int): File
+    fun onPageChanged(page: Int)
+    fun getCount(): Int
+    fun setOnDocumentChangeListener(listener: () -> Unit)
+    fun setOnPageChangedListener(listener: (Int) -> Unit)
+    fun setPageChangeListener(listener: (Int) -> Unit)
 }

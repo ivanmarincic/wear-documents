@@ -1,4 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ MIT License
+  ~
+  ~ Copyright (c) 2018 Ivan Marinčić
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~ of this software and associated documentation files (the "Software"), to deal
+  ~ in the Software without restriction, including without limitation the rights
+  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~ copies of the Software, and to permit persons to whom the Software is
+  ~ furnished to do so, subject to the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be included in all
+  ~ copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  ~ SOFTWARE.
+  -->
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -21,44 +45,29 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:tint="@color/actionBarPrimaryText"
-                app:srcCompat="@drawable/ic_folder_open"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintRight_toLeftOf="@id/file_browser_dialog_toolbar_icon_guideline"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_folder_open" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:layout_marginLeft="16dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:text="@string/file_browser_dialog_title"
                 android:textColor="@color/actionBarPrimaryText"
                 android:textSize="@dimen/file_browser_dialog_toolbar_text_size"
                 app:layout_constraintBottom_toTopOf="@id/file_browser_dialog_toolbar_text_guideline"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintLeft_toRightOf="@id/file_browser_dialog_toolbar_icon_guideline"
+                app:layout_constraintStart_toStartOf="@+id/file_browser_dialog_toolbar_icon_guideline"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.25" />
-
-            <TextView
-                android:id="@+id/file_browser_dialog_path"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
-                android:text="/"
-                android:textColor="@color/actionBarSecondaryText"
-                android:textSize="@dimen/file_browser_dialog_toolbar_secondary_text_size"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0"
-                app:layout_constraintLeft_toRightOf="@id/file_browser_dialog_toolbar_icon_guideline"
-                app:layout_constraintTop_toBottomOf="@id/file_browser_dialog_toolbar_text_guideline"
-                app:layout_constraintVertical_bias="0.75" />
+                app:layout_constraintVertical_bias="0.0" />
 
             <android.support.constraint.Guideline
                 android:id="@+id/file_browser_dialog_toolbar_icon_guideline"
@@ -72,7 +81,23 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:layout_constraintGuide_percent="0.65" />
+                app:layout_constraintGuide_percent="0.6" />
+
+            <TextView
+                android:id="@+id/file_browser_dialog_path"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="16dp"
+                android:text="/"
+                android:textColor="@color/actionBarSecondaryText"
+                android:textSize="@dimen/file_browser_dialog_toolbar_secondary_text_size"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.061"
+                app:layout_constraintStart_toStartOf="@+id/file_browser_dialog_toolbar_icon_guideline"
+                app:layout_constraintTop_toTopOf="@+id/file_browser_dialog_toolbar_text_guideline" />
         </android.support.constraint.ConstraintLayout>
 
         <android.support.v7.widget.RecyclerView
@@ -93,10 +118,10 @@
             android:id="@+id/file_browser_dialog_list_progress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/file_browser_dialog_list"
+            app:layout_constraintBottom_toBottomOf="@id/file_browser_dialog_list"
             app:layout_constraintLeft_toLeftOf="@id/file_browser_dialog_list"
             app:layout_constraintRight_toRightOf="@id/file_browser_dialog_list"
-            app:layout_constraintBottom_toBottomOf="@id/file_browser_dialog_list" />
+            app:layout_constraintTop_toTopOf="@id/file_browser_dialog_list" />
 
         <Button
             android:id="@+id/file_browser_dialog_cancel_button"

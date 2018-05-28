@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ MIT License
   ~
@@ -23,21 +22,8 @@
   ~ SOFTWARE.
   -->
 
-<resources>
-    <dimen name="main_view_fab_margin">16dp</dimen>
-    <dimen name="file_browser_dialog_toolbar_text_size">16sp</dimen>
-    <dimen name="file_browser_dialog_toolbar_secondary_text_size">14sp</dimen>
-    <dimen name="file_browser_dialog_item_height">40dp</dimen>
-    <dimen name="main_view_list_item_height">50dp</dimen>
-    <dimen name="main_view_list_item_padding">4dp</dimen>
-    <dimen name="main_view_list_item_text_size">20sp</dimen>
-    <dimen name="dialog_top_border_height">1dp</dimen>
-    <dimen name="dialog_toolbar_size">60dp</dimen>
-    <dimen name="node_picker_dialog_toolbar_text_size">20sp</dimen>
-    <dimen name="node_picker_dialog_item_text_size">20sp</dimen>
-    <dimen name="node_picker_dialog_height">300dp</dimen>
-    <dimen name="setting_dialog_title_text_size">18sp</dimen>
-    <dimen name="about_dialog_title_text_size">18sp</dimen>
-    <dimen name="about_dialog_info_text_size">14sp</dimen>
-    <dimen name="about_dialog_description_text_size">12sp</dimen>
-</resources>
+<vector android:height="24dp" android:tint="#FFFFFF"
+    android:viewportHeight="24.0" android:viewportWidth="24.0"
+    android:width="24dp" xmlns:android="http://schemas.android.com/apk/res/android">
+    <path android:fillColor="#FF000000" android:pathData="M19,6.41L17.59,5 12,10.59 6.41,5 5,6.41 10.59,12 5,17.59 6.41,19 12,13.41 17.59,19 19,17.59 13.41,12z"/>
+</vector>

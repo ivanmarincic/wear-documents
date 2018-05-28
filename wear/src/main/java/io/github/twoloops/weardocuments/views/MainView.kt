@@ -1,3 +1,27 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2018 Ivan Marinčić
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package io.github.twoloops.weardocuments.views
 
 import android.app.Activity
@@ -13,7 +37,8 @@ import android.widget.SeekBar
 import android.widget.TextView
 import io.github.twoloops.core.Document
 import io.github.twoloops.weardocuments.R
-import io.github.twoloops.weardocuments.adapters.DocumentAdapter
+import io.github.twoloops.weardocuments.adapters.DocumentViewAdapter
+import io.github.twoloops.weardocuments.contracts.DocumentAdapter
 import io.github.twoloops.weardocuments.services.DataService
 import org.json.JSONArray
 
@@ -30,7 +55,7 @@ class MainView : WearableActivity() {
     }
     private val dataService = DataService.getInstance(this)
     private val contentView by lazy(LazyThreadSafetyMode.NONE) {
-        findViewById<DocumentLayout>(R.id.main_layout_content)
+        findViewById<DocumentView>(R.id.main_layout_content)
     }
     private val drawer: WearableDrawerView by lazy(LazyThreadSafetyMode.NONE) {
         findViewById<WearableDrawerView>(R.id.main_layout_drawer)
@@ -54,7 +79,7 @@ class MainView : WearableActivity() {
         findViewById<TextView>(R.id.main_layout_empty)
     }
     private val adapter: DocumentAdapter by lazy(LazyThreadSafetyMode.NONE) {
-        DocumentAdapter()
+        DocumentViewAdapter()
     }
     private var darkMode = false
     private var currentZoomLevel = 2
@@ -93,7 +118,6 @@ class MainView : WearableActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == SETTINGS_SAVED_REQUEST_CODE && (resultCode == RESULT_OK || resultCode == RESULT_CANCELED)) {
             loadDocumentLayoutSettings()
-            adapter.notifyDataSetChanged()
         }
         if (requestCode == DOCUMENT_SELECTED_REQUEST_CODE && resultCode == RESULT_OK) {
             loadAtIndex(data!!.getIntExtra("index", 0))
@@ -114,9 +138,9 @@ class MainView : WearableActivity() {
         currentZoomLevel = sharedPreferences.getInt("ZoomLevel", 2)
         currentZoomStrength = sharedPreferences.getFloat("ZoomStrength", 1f)
         darkMode = sharedPreferences.getBoolean("DarkMode", false)
-        contentView.zoomLevels = currentZoomLevel
-        contentView.zoomStrength = currentZoomStrength
-        adapter.darkMode = darkMode
+        adapter.zoomLevels = currentZoomLevel
+        adapter.zoomStrength = currentZoomStrength
+        adapter.dark = darkMode
         adapter.setOnPageChangedListener {
             pageTexView.text = "${it + 1}"
             pageSlider.progress = it
@@ -141,17 +165,11 @@ class MainView : WearableActivity() {
                     runOnUiThread {
                         pageSlider.max = newDocument.dataCount - 1
                         pageSlider.progress = 0
-                        with(adapter) {
-                            document = newDocument
-                            notifyDataSetChanged()
-                        }
+                        adapter.document = newDocument
                     }
                 } else {
                     runOnUiThread {
-                        with(adapter) {
-                            document = Document()
-                            notifyDataSetChanged()
-                        }
+                        adapter.document = Document()
                         emptyMessage.visibility = View.VISIBLE
                     }
                 }
@@ -176,7 +194,7 @@ class MainView : WearableActivity() {
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                contentView.currentPage = seekBar!!.progress
+                adapter.currentPage = seekBar!!.progress
             }
         })
         pageSlider.setOnTouchListener { v, event ->
@@ -186,8 +204,8 @@ class MainView : WearableActivity() {
 
     private fun initializeContent() {
         currentDataJson = dataService.loadJson()
-        contentView.adapter = adapter
         loadDocumentLayoutSettings()
+        contentView.adapter = adapter
         loadAtIndex(sharedPreferences.getInt("ItemIndex", 0))
     }
 }
