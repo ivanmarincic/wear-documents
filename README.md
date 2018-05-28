@@ -7,4 +7,4 @@ Application for sharing PDF's and images between Android handheld and wearable.
 If you are having problems with application please report issue [here](https://github.com/ivanmarincic/wear-documents/issues)
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
