@@ -24,7 +24,6 @@
 
 package io.github.twoloops.weardocuments.contracts
 
-import android.database.DataSetObserver
 import android.view.View
 import android.view.ViewGroup
 import io.github.twoloops.core.Document
@@ -38,10 +37,12 @@ interface DocumentAdapter {
     var zoomLevels: Int
     var zoomStrength: Float
     fun getView(position: Int, convertView: View?, parent: ViewGroup): View
+    fun cancel(position: Int)
     fun getItem(position: Int): File
     fun onPageChanged(page: Int)
     fun getCount(): Int
     fun setOnDocumentChangeListener(listener: () -> Unit)
     fun setOnPageChangedListener(listener: (Int) -> Unit)
     fun setPageChangeListener(listener: (Int) -> Unit)
+    fun refresh()
 }

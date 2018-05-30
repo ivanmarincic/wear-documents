@@ -67,5 +67,5 @@
     <string name="about_dialog_leave_a_tip">Leave a tip</string>
     <string name="about_dialog_leave_a_tip_description">Support development of this application</string>
     <string name="about_dialog_report_issue">Report issue</string>
-    <string name="about_dialog_report_issue_description">Found bug? report it so I can fix it as soon as possible</string>
+    <string name="about_dialog_report_issue_description">Found a bug? Report it so I can fix it as soon as possible</string>
 </resources>

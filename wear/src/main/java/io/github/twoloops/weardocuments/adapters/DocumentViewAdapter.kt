@@ -24,9 +24,11 @@
 
 package io.github.twoloops.weardocuments.adapters
 
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.util.SparseArray
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -40,7 +42,8 @@ import java.io.File
 import java.util.*
 
 
-class DocumentViewAdapter : DocumentAdapter {
+class DocumentViewAdapter(var context: Context) : DocumentAdapter {
+
     private var _document: Document? = null
     override var document: Document
         get() {
@@ -65,6 +68,7 @@ class DocumentViewAdapter : DocumentAdapter {
     private var pageChangeListener: ((Int) -> Unit)? = null
     private var pageOnChangedListener: ((Int) -> Unit)? = null
     private var documentChangeListener: (() -> Unit)? = null
+    private val targets: SparseArray<SimpleTarget<Drawable>> = SparseArray()
 
     override fun getItem(position: Int): File {
         return document.imageFiles[position]
@@ -78,7 +82,7 @@ class DocumentViewAdapter : DocumentAdapter {
         val view: ImageView = if (convertView == null) {
             val imageView = ImageView(parent.context)
             imageView.tag = UUID.randomUUID().toString()
-            imageView.scaleType = ImageView.ScaleType.FIT_XY
+            imageView.scaleType = ImageView.ScaleType.FIT_CENTER
             imageView.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             imageView
         } else {
@@ -86,18 +90,24 @@ class DocumentViewAdapter : DocumentAdapter {
             imageView.setImageDrawable(ColorDrawable(Color.DKGRAY))
             imageView
         }
-        Glide.with(parent.context)
+        val target = object : SimpleTarget<Drawable>() {
+            override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable>?) {
+                if (dark) {
+                    view.setImageDrawable(Utils.drawableInvertColors(resource))
+                } else {
+                    view.setImageDrawable(resource)
+                }
+            }
+        }
+        targets.put(position, target)
+        Glide.with(context)
                 .load(getItem(position))
-                .into(object : SimpleTarget<Drawable>() {
-                    override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable>?) {
-                        if (dark) {
-                            view.setImageDrawable(Utils.drawableInvertColors(resource))
-                        } else {
-                            view.setImageDrawable(resource)
-                        }
-                    }
-                })
+                .into(target)
         return view
+    }
+
+    override fun cancel(position: Int) {
+        Glide.with(context).clear(targets[position])
     }
 
     override fun onPageChanged(page: Int) {
@@ -115,5 +125,9 @@ class DocumentViewAdapter : DocumentAdapter {
 
     override fun setOnPageChangedListener(listener: (Int) -> Unit) {
         pageOnChangedListener = listener
+    }
+
+    override fun refresh() {
+        pageChangeListener?.invoke(currentPage)
     }
 }

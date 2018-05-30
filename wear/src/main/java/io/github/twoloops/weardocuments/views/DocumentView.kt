@@ -30,7 +30,6 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.res.Resources
-import android.graphics.RectF
 import android.support.v4.view.ViewCompat
 import android.util.AttributeSet
 import android.util.SparseArray
@@ -69,7 +68,7 @@ class DocumentView : ViewGroup, GestureDetector.OnGestureListener, GestureDetect
     private var touchEvent: MotionEvent? = null
     private var lastScrollX: Int = 0
     private var lastScrollY: Int = 0
-    private var invalidChildren = ArrayDeque<Child>()
+    private var invalidChildren = ArrayDeque<QueueItem>()
     private var loadedChildren = SparseArray<Child>()
     private var currentPage = 0
     private var maxLoadedPages = 5
@@ -87,8 +86,6 @@ class DocumentView : ViewGroup, GestureDetector.OnGestureListener, GestureDetect
     private val gestureDetector by lazy {
         GestureDetector(context, this)
     }
-    private val mCurrentViewport = RectF(0f, 0f, 100f, 100f)
-    private val mDefaultViewport = RectF(0f, 0f, 100f, 100f)
 
     init {
         boxInset = (0.146467f * Math.max(Resources.getSystem().displayMetrics.heightPixels, Resources.getSystem().displayMetrics.widthPixels)).toInt()
@@ -108,22 +105,27 @@ class DocumentView : ViewGroup, GestureDetector.OnGestureListener, GestureDetect
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        for (child in invalidChildren) {
-            child.view.measure(MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(childHeight, MeasureSpec.EXACTLY))
+        for (item in invalidChildren) {
+            loadedChildren[item.indexToDelete].view.measure(MeasureSpec.makeMeasureSpec(childWidth, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(childHeight, MeasureSpec.EXACTLY))
         }
         setMeasuredDimension(MeasureSpec.makeMeasureSpec(screenWidth, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(screenHeight, MeasureSpec.EXACTLY))
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
         val iterator = invalidChildren.iterator()
-        for (child in iterator) {
-            val top = child.position * childHeight + boxInset
-            val left = boxInset
-            val right = left + childWidth
-            val bottom = top + childHeight
-            child.view.layout(left, top, right, bottom)
-            loadedChildren.put(child.position, child)
-            println("SSS ${child.position}")
+        for (item in iterator) {
+            if (invalidChildren.size <= maxLoadedPages) {
+                val child = loadedChildren[item.indexToDelete]
+                adapter.cancel(child.position)
+                child.position = item.indexToLoad
+                child.view = adapter.getView(item.indexToLoad, child.view, this)
+                val top = item.indexToLoad * childHeight + boxInset
+                val left = boxInset
+                val right = left + childWidth
+                val bottom = top + childHeight
+                child.view.layout(left, top, right, bottom)
+                loadedChildren.put(item.indexToLoad, child)
+            }
             iterator.remove()
         }
     }
@@ -240,13 +242,9 @@ class DocumentView : ViewGroup, GestureDetector.OnGestureListener, GestureDetect
         val scrollDirection = currentPage - previousPage
         val pageToLoad = currentPage + (maxLoadedPages / 2) * scrollDirection
         val pageToDelete = previousPage + (maxLoadedPages / 2) * -scrollDirection
-        if (loadedChildren[pageToLoad] == null && pageToLoad >= 0 && pageToLoad < pageCount && pageToDelete >= 0 && pageToDelete < pageCount) {
-            println("AAA $pageToLoad")
-            val loadedChild = loadedChildren[pageToDelete]
-            val view = adapter.getView(pageToLoad, loadedChild?.view, this)
-            val child = Child(view, pageToLoad)
-            invalidChildren.add(child)
-            loadedChildren.remove(pageToDelete)
+        if (pageToLoad in 0 until pageCount && pageToDelete in 0 until pageCount) {
+            invalidChildren.add(QueueItem(pageToLoad, pageToDelete % maxLoadedPages))
+            requestLayout()
         }
         adapter.onPageChanged(currentPage)
     }
@@ -274,11 +272,12 @@ class DocumentView : ViewGroup, GestureDetector.OnGestureListener, GestureDetect
         }
         for (i in startingIndex until Math.min(startingIndex + maxLoadedPages, pageCount)) {
             val view = adapter.getView(i, null, this)
-            val child = Child(view, i)
-            invalidChildren.add(child)
+            loadedChildren.put(i % maxLoadedPages, Child(view, i))
+            invalidChildren.add(QueueItem(i, i % maxLoadedPages))
             addView(view)
         }
         currentPage = start
+        adapter.onPageChanged(currentPage)
     }
 
     private fun calculateScrollArea() {
@@ -291,5 +290,6 @@ class DocumentView : ViewGroup, GestureDetector.OnGestureListener, GestureDetect
     }
 
     inner class Child(var view: View, var position: Int)
+    inner class QueueItem(var indexToLoad: Int, var indexToDelete: Int)
 
 }

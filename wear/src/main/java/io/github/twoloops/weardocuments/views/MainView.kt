@@ -28,6 +28,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.support.wear.widget.drawer.WearableDrawerView
 import android.support.wearable.activity.WearableActivity
 import android.view.View
@@ -78,12 +80,16 @@ class MainView : WearableActivity() {
     private val emptyMessage: TextView by lazy(LazyThreadSafetyMode.NONE) {
         findViewById<TextView>(R.id.main_layout_empty)
     }
-    private val adapter: DocumentAdapter by lazy(LazyThreadSafetyMode.NONE) {
-        DocumentViewAdapter()
+    private val pageIndicator: TextView by lazy(LazyThreadSafetyMode.NONE) {
+        findViewById<TextView>(R.id.main_layout_page_indicator)
     }
-    private var darkMode = false
-    private var currentZoomLevel = 2
-    private var currentZoomStrength = 1f
+    private val adapter: DocumentAdapter by lazy(LazyThreadSafetyMode.NONE) {
+        DocumentViewAdapter(applicationContext)
+    }
+    private val handler: Handler by lazy(LazyThreadSafetyMode.NONE) {
+        Handler(Looper.getMainLooper())
+    }
+    private var pageIndicatorRunnable: Runnable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -118,6 +124,7 @@ class MainView : WearableActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == SETTINGS_SAVED_REQUEST_CODE && (resultCode == RESULT_OK || resultCode == RESULT_CANCELED)) {
             loadDocumentLayoutSettings()
+            adapter.refresh()
         }
         if (requestCode == DOCUMENT_SELECTED_REQUEST_CODE && resultCode == RESULT_OK) {
             loadAtIndex(data!!.getIntExtra("index", 0))
@@ -135,15 +142,19 @@ class MainView : WearableActivity() {
     }
 
     private fun loadDocumentLayoutSettings() {
-        currentZoomLevel = sharedPreferences.getInt("ZoomLevel", 2)
-        currentZoomStrength = sharedPreferences.getFloat("ZoomStrength", 1f)
-        darkMode = sharedPreferences.getBoolean("DarkMode", false)
-        adapter.zoomLevels = currentZoomLevel
-        adapter.zoomStrength = currentZoomStrength
-        adapter.dark = darkMode
+        adapter.zoomLevels = sharedPreferences.getInt("ZoomLevel", 2)
+        adapter.zoomStrength = sharedPreferences.getFloat("ZoomStrength", 1f)
+        adapter.dark = sharedPreferences.getBoolean("DarkMode", false)
         adapter.setOnPageChangedListener {
             pageTexView.text = "${it + 1}"
             pageSlider.progress = it
+            pageIndicator.text = "${it + 1}"
+            pageIndicator.visibility = View.VISIBLE
+            handler.removeCallbacks(pageIndicatorRunnable)
+            pageIndicatorRunnable = Runnable {
+                pageIndicator.visibility = View.INVISIBLE
+            }
+            handler.postDelayed(pageIndicatorRunnable, 3000)
         }
     }
 
