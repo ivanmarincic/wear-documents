@@ -49,6 +49,10 @@
     <string name="alert_dialog_error_converting">There seems to be an issue when converting file</string>
     <string name="alert_dialog_error_deleting_file">There seems to be an issue when deleting file on wearable, delete from device only</string>
     <string name="alert_dialog_error_oom">There seems to be an issue with memory when converting files, try reducing image quality</string>
+    <string name="alert_dialog_title_delete_only">Delete on this device only</string>
+    <string name="alert_dialog_description_delete_only">Do you want to delete document on this device only </string>
+    <string name="alert_dialog_this_only">This only </string>
+    <string name="alert_dialog_no_both">Delete on both</string>
     <string name="notification_title_uploading">Uploading document</string>
     <string name="notification_title_uploading_finished">Uploading finished</string>
     <string name="notification_title_uploading_failed">Uploading failed</string>
@@ -67,5 +71,6 @@
     <string name="about_dialog_leave_a_tip">Leave a tip</string>
     <string name="about_dialog_leave_a_tip_description">Support development of this application</string>
     <string name="about_dialog_report_issue">Report issue</string>
-    <string name="about_dialog_report_issue_description">Found a bug? Report it so I can fix it as soon as possible</string>
+    <string name="about_dialog_report_issue_description">Found a bug or want a new feature? Inform me so I can start working on it</string>
+    <string name="about_dialog_uploading_issue_description">If you are having issue with uploading document try uploading while wearable application is open</string>
 </resources>

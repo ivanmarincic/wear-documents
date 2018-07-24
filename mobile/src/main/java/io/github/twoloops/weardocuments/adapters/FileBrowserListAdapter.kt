@@ -1,6 +1,31 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2018 Ivan Marinčić
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package io.github.twoloops.weardocuments.adapters
 
 import android.support.v7.widget.RecyclerView
+import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -17,8 +42,8 @@ class FileBrowserListAdapter : RecyclerView.Adapter<FileBrowserListAdapter.ViewH
     private val ITEM_TYPE_BACK_BUTTON = 0
     private val ITEM_TYPE_FILE = 1
 
-    var itemList: ArrayList<File>? = null
-    var selectedItems: HashMap<Int, File> = HashMap()
+    var itemList: List<File> = ArrayList()
+    var selectedItems: SparseArray<File> = SparseArray()
     var currentSelectionType: Int = 0
 
     var listener: ((item: File?) -> Unit)? = null
@@ -29,7 +54,7 @@ class FileBrowserListAdapter : RecyclerView.Adapter<FileBrowserListAdapter.ViewH
     }
 
     override fun getItemCount(): Int {
-        return itemList!!.count() + if (isRoot) {
+        return itemList.count() + if (isRoot) {
             0
         } else {
             1
@@ -46,10 +71,10 @@ class FileBrowserListAdapter : RecyclerView.Adapter<FileBrowserListAdapter.ViewH
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = if (isRoot) {
-            itemList!![position]
+            itemList[position]
         } else {
             if (position > 0) {
-                itemList!![position - 1]
+                itemList[position - 1]
             } else {
                 null
             }
@@ -88,15 +113,19 @@ class FileBrowserListAdapter : RecyclerView.Adapter<FileBrowserListAdapter.ViewH
     }
 
     private fun tryCheck(view: CheckBox, item: File) {
-        val count = selectedItems.count()
+        val count = selectedItems.size()
         if (count == 0) {
             currentSelectionType = item.type
         }
         if (currentSelectionType == item.type) {
             if (currentSelectionType == File.FILE_TYPE_IMAGE || count == 0 || (count == 1 && view.isChecked)) {
                 view.toggle()
-                if (selectedItems.remove(item.hashCode()) == null && view.isChecked) {
-                    selectedItems[item.hashCode()] = item
+                val key = item.hashCode()
+                val removedItem = selectedItems.get(key)
+                if (removedItem == null && view.isChecked) {
+                    selectedItems.put(key, item)
+                } else {
+                    selectedItems.remove(key)
                 }
                 listener?.invoke(item)
             }

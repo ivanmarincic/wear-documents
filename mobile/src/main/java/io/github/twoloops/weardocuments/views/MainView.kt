@@ -30,7 +30,6 @@ import android.support.design.widget.FloatingActionButton
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
@@ -40,7 +39,10 @@ import io.github.twoloops.core.File
 import io.github.twoloops.weardocuments.R
 import io.github.twoloops.weardocuments.adapters.DocumentListAdapter
 import io.github.twoloops.weardocuments.contracts.MainContract
-import io.github.twoloops.weardocuments.dialogs.*
+import io.github.twoloops.weardocuments.dialogs.AboutDialog
+import io.github.twoloops.weardocuments.dialogs.AlertInfoDialog
+import io.github.twoloops.weardocuments.dialogs.DocumentPreviewDialog
+import io.github.twoloops.weardocuments.dialogs.FileBrowserDialog
 import io.github.twoloops.weardocuments.presenters.MainPresenter
 
 
@@ -62,6 +64,7 @@ class MainView : AppCompatActivity(), MainContract.View {
     val adapter: DocumentListAdapter by lazy(LazyThreadSafetyMode.NONE) {
         DocumentListAdapter()
     }
+    lateinit var fileBrowserDialog: FileBrowserDialog
     var items: ArrayList<Document>? = null
     private var isNew = false
 
@@ -73,6 +76,7 @@ class MainView : AppCompatActivity(), MainContract.View {
         presenter.loadData()
         presenter.initializeAddButton()
         presenter.initializeList()
+        presenter.initializeDialogs()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -108,8 +112,8 @@ class MainView : AppCompatActivity(), MainContract.View {
         }
     }
 
-    override fun createDocument(files: ArrayList<File>): Document {
-        val document = Document()
+    override fun createDocument(files: ArrayList<File>, oldDocument: Document?): Document {
+        val document = oldDocument ?: Document()
         if (files.count() > 0) {
             val type = files[0].type
             document.files = files
@@ -120,11 +124,15 @@ class MainView : AppCompatActivity(), MainContract.View {
                 document.name = "Image gallery"
             }
         }
-        isNew = true
+        if (oldDocument == null) {
+            isNew = true
+        }
         return document
     }
 
     override fun addDocument(document: Document) {
+        document.dataChunkSize = 0
+        document.dataChunkStart = 0
         if (isNew) {
             items!!.add(document)
         } else {
@@ -158,16 +166,22 @@ class MainView : AppCompatActivity(), MainContract.View {
 
     override fun getDocumentPreviewDialog(document: Document): DocumentPreviewDialog {
         val dialog = DocumentPreviewDialog(this, document)
-        dialog.deleteListener = {
-            presenter.deleteDocument(it, { isSuccessful ->
-                if (isSuccessful) {
-                    deleteItem(it)
+        dialog.deleteListener = { documentToDelete ->
+            AlertInfoDialog.getInstance(this).deleteOnThisDeviceOnly { thisOnly ->
+                if (thisOnly) {
+                    deleteItem(documentToDelete)
                 } else {
-                    AlertInfoDialog.getInstance(this).alertDeleteAnyway {
-                        deleteItem(it)
-                    }
+                    presenter.deleteDocument(documentToDelete, { isSuccessful ->
+                        if (isSuccessful) {
+                            deleteItem(documentToDelete)
+                        } else {
+                            AlertInfoDialog.getInstance(this).alertDeleteAnyway {
+                                deleteItem(documentToDelete)
+                            }
+                        }
+                    })
                 }
-            })
+            }
         }
         dialog.saveListener = {
             addDocument(document)
@@ -182,16 +196,10 @@ class MainView : AppCompatActivity(), MainContract.View {
     }
 
     override fun getFileBrowserDialog(document: Document?): FileBrowserDialog {
-        val dialog = FileBrowserDialog(this, document?.files)
-        dialog.setOnDismissListener {
-            addButton.isEnabled = true
+        fileBrowserDialog.selectedFiles = document?.files
+        fileBrowserDialog.listener = {
+            getDocumentPreviewDialog(createDocument(it, document)).show()
         }
-        dialog.listener = {
-            if (document != null) {
-                document.files = it
-            }
-            getDocumentPreviewDialog(document ?: createDocument(it)).show()
-        }
-        return dialog
+        return fileBrowserDialog
     }
 }

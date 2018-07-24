@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ MIT License
   ~
   ~ Copyright (c) 2018 Ivan Marinčić
@@ -100,8 +99,8 @@
                 app:layout_constraintTop_toTopOf="@+id/file_browser_dialog_toolbar_text_guideline" />
         </android.support.constraint.ConstraintLayout>
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/file_browser_dialog_list"
+        <FrameLayout
+            android:id="@+id/file_browser_dialog_list_holder"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginBottom="8dp"
@@ -112,16 +111,23 @@
             app:layout_constraintHeight_default="spread"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/file_browser_dialog_toolbar" />
+            app:layout_constraintTop_toBottomOf="@+id/file_browser_dialog_toolbar">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/file_browser_dialog_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </FrameLayout>
 
         <ProgressBar
             android:id="@+id/file_browser_dialog_list_progress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="@id/file_browser_dialog_list"
-            app:layout_constraintLeft_toLeftOf="@id/file_browser_dialog_list"
-            app:layout_constraintRight_toRightOf="@id/file_browser_dialog_list"
-            app:layout_constraintTop_toTopOf="@id/file_browser_dialog_list" />
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@id/file_browser_dialog_list_holder"
+            app:layout_constraintLeft_toLeftOf="@id/file_browser_dialog_list_holder"
+            app:layout_constraintRight_toRightOf="@id/file_browser_dialog_list_holder"
+            app:layout_constraintTop_toTopOf="@id/file_browser_dialog_list_holder" />
 
         <Button
             android:id="@+id/file_browser_dialog_cancel_button"
@@ -133,7 +139,7 @@
             android:text="@string/file_browser_dialog_cancel"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/file_browser_dialog_select_button"
-            app:layout_constraintTop_toBottomOf="@+id/file_browser_dialog_list"
+            app:layout_constraintTop_toBottomOf="@+id/file_browser_dialog_list_holder"
             app:layout_constraintVertical_bias="0.501" />
 
         <Button
@@ -146,7 +152,7 @@
             android:textColor="@color/accent_text_color"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/file_browser_dialog_list" />
+            app:layout_constraintTop_toBottomOf="@+id/file_browser_dialog_list_holder" />
 
 
         <android.support.constraint.Guideline

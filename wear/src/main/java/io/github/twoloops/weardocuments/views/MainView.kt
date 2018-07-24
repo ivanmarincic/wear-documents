@@ -43,6 +43,7 @@ import io.github.twoloops.weardocuments.adapters.DocumentViewAdapter
 import io.github.twoloops.weardocuments.contracts.DocumentAdapter
 import io.github.twoloops.weardocuments.services.DataService
 import org.json.JSONArray
+import java.util.concurrent.Executors
 
 
 class MainView : WearableActivity() {
@@ -90,6 +91,8 @@ class MainView : WearableActivity() {
         Handler(Looper.getMainLooper())
     }
     private var pageIndicatorRunnable: Runnable? = null
+    private val executor = Executors.newSingleThreadExecutor()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -128,6 +131,7 @@ class MainView : WearableActivity() {
         }
         if (requestCode == DOCUMENT_SELECTED_REQUEST_CODE && resultCode == RESULT_OK) {
             loadAtIndex(data!!.getIntExtra("index", 0))
+            adapter.currentPage = 0
         }
         if (requestCode == DOCUMENT_SELECTED_REQUEST_CODE && resultCode == Activity.RESULT_CANCELED) {
             currentDataJson = DataService.getInstance(this).loadJson()
@@ -148,20 +152,23 @@ class MainView : WearableActivity() {
         adapter.setOnPageChangedListener {
             pageTexView.text = "${it + 1}"
             pageSlider.progress = it
-            pageIndicator.text = "${it + 1}"
-            pageIndicator.visibility = View.VISIBLE
-            handler.removeCallbacks(pageIndicatorRunnable)
-            pageIndicatorRunnable = Runnable {
-                pageIndicator.visibility = View.INVISIBLE
+            if (adapter.getCount() > 0) {
+                pageIndicator.text = "${it + 1}"
+                pageIndicator.visibility = View.VISIBLE
+                handler.removeCallbacks(pageIndicatorRunnable)
+                pageIndicatorRunnable = Runnable {
+                    pageIndicator.visibility = View.INVISIBLE
+                }
+                handler.postDelayed(pageIndicatorRunnable, 3000)
             }
-            handler.postDelayed(pageIndicatorRunnable, 3000)
         }
     }
 
     private fun loadAtIndex(index: Int) {
         progressBar.visibility = View.VISIBLE
         emptyMessage.visibility = View.INVISIBLE
-        Thread(Runnable {
+        pageIndicator.visibility = View.VISIBLE
+        executor.submit({
             try {
                 if (currentDataJson.length() > 0 && currentItemIndex != -1) {
                     currentItemIndex = if (index < currentDataJson!!.length() && index >= 0) {
@@ -182,6 +189,7 @@ class MainView : WearableActivity() {
                     runOnUiThread {
                         adapter.document = Document()
                         emptyMessage.visibility = View.VISIBLE
+                        pageIndicator.visibility = View.INVISIBLE
                     }
                 }
             } catch (e: Exception) {
@@ -191,7 +199,7 @@ class MainView : WearableActivity() {
                     progressBar.visibility = View.INVISIBLE
                 }
             }
-        }).start()
+        })
     }
 
     private fun initializeSlider() {

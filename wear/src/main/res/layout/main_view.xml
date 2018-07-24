@@ -65,6 +65,7 @@
             android:layout_margin="14dp"
             android:background="@color/black900"
             android:visibility="invisible"
+            android:padding="5dp"
             tools:text="123" />
     </FrameLayout>
 

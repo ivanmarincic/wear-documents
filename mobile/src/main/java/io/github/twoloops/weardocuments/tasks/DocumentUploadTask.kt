@@ -206,6 +206,7 @@ class DocumentUploadTask(private val context: WeakReference<Context>) : AsyncTas
     private fun sendDataWithNode(node: Node, data: Document) {
         try {
             data.dataChunkSize = 10
+            data.dataChunkStart = 0
             var isUploadingInProgress = true
             val documentConverter = DocumentConverter(data, context)
             documentConverter.listener = {
